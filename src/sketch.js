@@ -27,7 +27,7 @@ function preload(){
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  backBoard= createSprite(50, width/2, 100,height);
+  backBoard= createSprite(50, height/2, 100, height);
   backBoard.addImage(backBoardImg)
   
   gun= createSprite(100, height/2, 50,50);
