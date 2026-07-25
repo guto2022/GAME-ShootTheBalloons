@@ -68,23 +68,12 @@ function draw() {
       shootBullet();
     }
 
-    if (blueBubbleGroup.collide(backBoard)){
-      handleGameover(blueBubbleGroup);
-    }
+    blueBubbleGroup.overlap(backBoard, handleGameover);
+    redBubbleGroup.overlap(backBoard, handleGameover);
     
-    if (redBubbleGroup.collide(backBoard)) {
-      handleGameover(redBubbleGroup);
-    }
-    
-    if(blueBubbleGroup.collide(bulletGroup)){
-      handleBubbleCollision(blueBubbleGroup);
-      bubblePopSound.play();
-    }
-
-    if(redBubbleGroup.collide(bulletGroup)){
-      handleBubbleCollision(redBubbleGroup);
-      bubblePopSound.play();
-    }
+    // A função handleBubbleCollision será chamada automaticamente enviando o sprite da bolha e da bala específicos
+    blueBubbleGroup.overlap(bulletGroup, handleBubbleCollision);
+    redBubbleGroup.overlap(bulletGroup, handleBubbleCollision);
 
     drawSprites();
   }
@@ -93,15 +82,16 @@ function draw() {
 }
 
 function drawblueBubble(){
-  bluebubble = createSprite(800,random(20,780),40,40);
+  bluebubble = createSprite(width, random(125, height - 50), 40, 40);
   bluebubble.addImage(blueBubbleImg);
   bluebubble.scale = 0.1;
   bluebubble.velocityX = -8;
   bluebubble.lifetime = 400;
   blueBubbleGroup.add(bluebubble);
 }
+
 function drawredBubble(){
-  redbubble = createSprite(800,random(20,780),40,40);
+  redbubble = createSprite(width, random(125, height - 50), 40, 40);
   redbubble.addImage(redBubbleImg);
   redbubble.scale = 0.1;
   redbubble.velocityX = -8;
@@ -115,42 +105,44 @@ function shootBullet(){
   bullet.y = gun.y - 34;
   bullet.addImage(bulletImg);
   bullet.scale = 0.12;
-  bullet.velocityX = 25;
+  bullet.velocityX = 75;
   bulletGroup.add(bullet);
 }
 
-function handleBubbleCollision(bubbleGroup){
-    if (life > 0) {
-       score=score+1;
-    }
+function handleBubbleCollision(bubble, bullet) {
+  if (life > 0) {
+    score = score + 1;
+  }
 
-    blast= createSprite(bullet.x+60, bullet.y, 50,50);
-    blast.addImage(blastImg) 
-    blast.scale=0.3
-    blast.life=20
-    bulletGroup.destroyEach()
-    bubbleGroup.destroyEach()
+  // Cria a explosão na posição exata da bala que colidiu
+  blast = createSprite(bullet.x + 60, bullet.y, 50, 50);
+  blast.addImage(blastImg);
+  blast.scale = 0.3;
+  blast.life = 20;
+
+  bubblePopSound.play();
+
+  // Destrói APENAS a bala e a bolha envolvidas na colisão
+  bullet.remove();
+  bubble.remove();
 }
 
-function handleGameover(bubbleGroup){
-  
-    life=life-1;
-    bubbleGroup.destroyEach();
+function handleGameover(bubble, board){
+  life = life - 1;
     
+  // Apaga apenas a bolha que encostou no painel
+  bubble.remove(); 
 
-    if (life === 0) {
-      gameState = END;
-      
-      swal({
-        title: `Fim de Jogo`,
-        text: "Sua pontuação é: " + score,
-        imageUrl:
-          "https://cdn.shopify.com/s/files/1/1061/1924/products/Thumbs_Down_Sign_Emoji_Icon_ios10_grande.png",
-        imageSize: "100x100",
-        confirmButtonText: "Jogar novamente"
-      }, function(){
-        gameState = PLAY;
-      });
-    }
-  
+  if (life === 0) {
+    gameState = END;
+    swal({
+      title: `Fim de Jogo`,
+      text: "Sua pontuação é: " + score,
+      imageUrl: "https://cdn.shopify.com/s/files/1/1061/1924/products/Thumbs_Down_Sign_Emoji_Icon_ios10_grande.png",
+      imageSize: "100x100",
+      confirmButtonText: "Jogar novamente"
+    }, function(){
+      gameState = PLAY;
+    });
+  }
 }
