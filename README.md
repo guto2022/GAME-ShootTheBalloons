@@ -1,6 +1,6 @@
 # 🎈 GAME-ShootTheBalloons
 
-> **Status:** 🚧 Em construção
+> **Status:** ✔️ Concluído
 
 ## 📖 Sobre
 
